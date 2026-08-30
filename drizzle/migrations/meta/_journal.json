@@ -1,5 +1,13 @@
 {
   "version": "7",
   "dialect": "postgresql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1788062573621,
+      "tag": "0000_yono_apps_core",
+      "breakpoints": true
+    }
+  ]
 }
