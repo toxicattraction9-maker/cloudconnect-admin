@@ -145,16 +145,13 @@ function Index() {
     [allApps],
   );
 
-  const categories = useMemo(() => {
-    const tags = Array.from(new Set(allApps.map((a) => a.tag).filter(Boolean)));
-    return ["All Apps", ...tags];
-  }, [allApps]);
+  const categories = useMemo(() => ["All Apps", "New App"], []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return allApps.filter(
       (a) =>
-        (category === "All Apps" || a.tag === category) &&
+        (category === "All Apps" || (category === "New App" && a.tag === "New")) &&
         (q === "" || a.name.toLowerCase().includes(q)),
     );
   }, [query, category, allApps]);

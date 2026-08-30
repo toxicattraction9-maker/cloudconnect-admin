@@ -38,10 +38,13 @@ export function SiteHeader() {
         </Link>
 
         <div className="ml-auto flex items-center gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link to="/contact">Contact Us</Link>
+          </Button>
           <Button asChild size="sm" className="gap-1.5">
             <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">
               <Send className="h-4 w-4" />
-              <span className="hidden xs:inline sm:inline">Join TG</span>
+              <span className="hidden xs:inline sm:inline">TG Bot</span>
             </a>
           </Button>
 
