@@ -43,6 +43,9 @@ const emptyDraft: Draft = {
   featured_rank: 99,
   featured_badge: "",
   featured_cta: "Play Now",
+  seo_title: "",
+  seo_description: "",
+  seo_keywords: "",
 };
 
 function toDraft(app: AppRow): Draft {
@@ -118,6 +121,9 @@ function AdminPage() {
       featured_rank: Number(draft.featured_rank) || 99,
       featured_badge: draft.featured_badge.trim(),
       featured_cta: draft.featured_cta.trim() || "Play Now",
+      seo_title: draft.seo_title.trim(),
+      seo_description: draft.seo_description.trim(),
+      seo_keywords: draft.seo_keywords.trim(),
     };
     const { error } = draft.id
       ? await supabase.from("apps").update(payload).eq("id", draft.id)
@@ -343,6 +349,40 @@ function AdminPage() {
             </div>
           </div>
 
+          <div className="mt-4 rounded-xl border border-border p-3">
+            <p className="text-sm font-bold text-foreground">SEO</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Leave blank and the details are generated automatically from the app name.
+            </p>
+            <div className="mt-3 grid gap-3">
+              <div>
+                <Label htmlFor="seotitle">SEO title</Label>
+                <Input
+                  id="seotitle"
+                  value={draft.seo_title}
+                  onChange={(e) => setDraft({ ...draft, seo_title: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="seodesc">SEO description</Label>
+                <Textarea
+                  id="seodesc"
+                  rows={2}
+                  value={draft.seo_description}
+                  onChange={(e) => setDraft({ ...draft, seo_description: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="seokw">SEO keywords</Label>
+                <Input
+                  id="seokw"
+                  value={draft.seo_keywords}
+                  onChange={(e) => setDraft({ ...draft, seo_keywords: e.target.value })}
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="mt-4 flex gap-2">
             <Button onClick={save} disabled={saving}>
               <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save"}
@@ -420,5 +460,172 @@ function AdminPage() {
         ))}
       </ul>
     </div>
+  );
+}
+
+
+type Settings = {
+  contact_email: string;
+  telegram_bot: string;
+  telegram_url: string;
+  support_note: string;
+  seo_title: string;
+  seo_description: string;
+  seo_keywords: string;
+};
+
+function SettingsPanel() {
+  const [settings, setSettings] = useState<Settings | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select(
+          "contact_email, telegram_bot, telegram_url, support_note, seo_title, seo_description, seo_keywords",
+        )
+        .limit(1)
+        .maybeSingle();
+      if (data) setSettings(data as Settings);
+    })();
+  }, []);
+
+  async function saveSettings() {
+    if (!settings) return;
+    setSaving(true);
+    const { error } = await supabase.from("site_settings").update(settings).neq("id", 0);
+    setSaving(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Settings saved");
+  }
+
+  if (!settings) return null;
+
+  return (
+    <section className="mt-5 rounded-2xl border border-border bg-card p-4">
+      <h2 className="text-base font-bold text-foreground">Contact &amp; site SEO</h2>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div>
+          <Label htmlFor="cemail">Contact email</Label>
+          <Input
+            id="cemail"
+            value={settings.contact_email}
+            onChange={(e) => setSettings({ ...settings, contact_email: e.target.value })}
+          />
+        </div>
+        <div>
+          <Label htmlFor="ctg">Telegram bot / handle</Label>
+          <Input
+            id="ctg"
+            value={settings.telegram_bot}
+            onChange={(e) => setSettings({ ...settings, telegram_bot: e.target.value })}
+          />
+        </div>
+        <div>
+          <Label htmlFor="ctgurl">Telegram link</Label>
+          <Input
+            id="ctgurl"
+            value={settings.telegram_url}
+            onChange={(e) => setSettings({ ...settings, telegram_url: e.target.value })}
+          />
+        </div>
+        <div>
+          <Label htmlFor="skw">Site SEO keywords</Label>
+          <Input
+            id="skw"
+            value={settings.seo_keywords}
+            onChange={(e) => setSettings({ ...settings, seo_keywords: e.target.value })}
+          />
+        </div>
+        <div>
+          <Label htmlFor="stitle">Site SEO title</Label>
+          <Input
+            id="stitle"
+            value={settings.seo_title}
+            onChange={(e) => setSettings({ ...settings, seo_title: e.target.value })}
+          />
+        </div>
+        <div>
+          <Label htmlFor="sdesc">Site SEO description</Label>
+          <Input
+            id="sdesc"
+            value={settings.seo_description}
+            onChange={(e) => setSettings({ ...settings, seo_description: e.target.value })}
+          />
+        </div>
+      </div>
+      <div className="mt-3">
+        <Label htmlFor="snote">Extra support note (shown on Contact page)</Label>
+        <Textarea
+          id="snote"
+          rows={2}
+          value={settings.support_note}
+          onChange={(e) => setSettings({ ...settings, support_note: e.target.value })}
+        />
+      </div>
+      <Button className="mt-3" onClick={saveSettings} disabled={saving}>
+        <Save className="h-4 w-4" /> {saving ? "Saving..." : "Save settings"}
+      </Button>
+    </section>
+  );
+}
+
+function TrafficPanel() {
+  const [stats, setStats] = useState<{ total: number; day: number; top: [string, number][] } | null>(
+    null,
+  );
+
+  useEffect(() => {
+    (async () => {
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const { data } = await supabase
+        .from("page_views")
+        .select("path, created_at")
+        .order("created_at", { ascending: false })
+        .limit(2000);
+      if (!data) return;
+      const counts = new Map<string, number>();
+      let day = 0;
+      for (const row of data) {
+        counts.set(row.path, (counts.get(row.path) ?? 0) + 1);
+        if (row.created_at >= since) day += 1;
+      }
+      const top = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10);
+      setStats({ total: data.length, day, top });
+    })();
+  }, []);
+
+  return (
+    <section className="mt-5 rounded-2xl border border-border bg-card p-4">
+      <h2 className="text-base font-bold text-foreground">Live traffic</h2>
+      {!stats ? (
+        <p className="mt-2 text-sm text-muted-foreground">Loading visits…</p>
+      ) : (
+        <>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <div className="rounded-xl border border-border p-3">
+              <p className="text-xs text-muted-foreground">Views (last 24h)</p>
+              <p className="text-xl font-extrabold text-foreground">{stats.day}</p>
+            </div>
+            <div className="rounded-xl border border-border p-3">
+              <p className="text-xs text-muted-foreground">Recent views tracked</p>
+              <p className="text-xl font-extrabold text-foreground">{stats.total}</p>
+            </div>
+          </div>
+          <ul className="mt-3 space-y-1 text-sm">
+            {stats.top.map(([path, count]) => (
+              <li key={path} className="flex justify-between gap-3 text-muted-foreground">
+                <span className="truncate">{path}</span>
+                <span className="font-semibold text-foreground">{count}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
   );
 }
