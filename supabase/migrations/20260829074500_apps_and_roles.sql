@@ -134,4 +134,9 @@ INSERT INTO public.apps (slug, name, icon, badge, tag, rating, url, rank, descri
 ('yono-vip', 'Yono VIP', 'https://i.ibb.co/LhQXnqXn/logo-3.png', 'Top', 'Trending', 4.8, 'https://www.yonohub.shop/app/yono-vip', 102,
  'Combines slots, poker, rummy, & arcade in one platform. Unlock exclusive tournaments, higher limits, & priority bonuses.', true, 2, 'PREMIUM EXPERIENCE', 'VIP Access'),
 ('yono-games', 'Yono Games', 'https://i.ibb.co/jPfwGJts/logo-36.png', 'Top', 'Trending', 4.8, 'https://www.yonohub.shop/app/yono-games', 103,
- 'Offers slots, card games, & arcade fun with instant welcome bonuses, daily tournaments, & a lag-free experience.', true, 3, 'ALL-IN-ONE HUB', 'Browse Hub');
+ 'Offers slots, card games, & arcade fun with instant welcome bonuses, daily tournaments, & a lag-free experience.', true, 3, 'ALL-IN-ONE HUB', 'Browse Hub')
+ON CONFLICT (slug) DO UPDATE SET
+  icon = EXCLUDED.icon, badge = EXCLUDED.badge, tag = EXCLUDED.tag, rating = EXCLUDED.rating,
+  url = EXCLUDED.url, rank = EXCLUDED.rank, description = EXCLUDED.description,
+  featured = EXCLUDED.featured, featured_rank = EXCLUDED.featured_rank,
+  featured_badge = EXCLUDED.featured_badge, featured_cta = EXCLUDED.featured_cta;
