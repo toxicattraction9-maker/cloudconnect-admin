@@ -10,11 +10,12 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
-export const TELEGRAM_URL = "https://t.me/xnnearning";
+export const TELEGRAM_URL = "https://t.me/YonoAppsCenterBot";
 
 const menuLinks = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About Us" },
+  { to: "/contact", label: "Contact Us" },
   { to: "/disclaimer", label: "Disclaimer" },
   { to: "/terms", label: "Terms & Conditions" },
 ] as const;

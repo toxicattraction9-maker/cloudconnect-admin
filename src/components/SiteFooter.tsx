@@ -12,6 +12,9 @@ export function SiteFooter() {
           <Link to="/about" className="text-muted-foreground hover:text-primary">
             About Us
           </Link>
+          <Link to="/contact" className="text-muted-foreground hover:text-primary">
+            Contact Us
+          </Link>
           <Link to="/disclaimer" className="text-muted-foreground hover:text-primary">
             Disclaimer
           </Link>

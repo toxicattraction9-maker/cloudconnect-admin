@@ -191,3 +191,13 @@ a[href*="lovable.dev?utm"],
   opacity: 0 !important;
   pointer-events: none !important;
 }
+
+/* Hide the injected Lovable edit badge on the deployed site */
+#lovable-badge,
+[id^="lovable-badge"],
+a[href*="lovable.dev/?utm"],
+a[href*="lovable.dev?utm"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}

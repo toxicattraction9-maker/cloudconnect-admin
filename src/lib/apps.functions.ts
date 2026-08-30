@@ -18,10 +18,13 @@ export type AppRow = {
   featured_rank: number;
   featured_badge: string;
   featured_cta: string;
+  seo_title: string;
+  seo_description: string;
+  seo_keywords: string;
 };
 
 export const APP_COLUMNS =
-  "id, slug, name, icon, badge, tag, rating, url, description, screenshots, rank, featured, featured_rank, featured_badge, featured_cta";
+  "id, slug, name, icon, badge, tag, rating, url, description, screenshots, rank, featured, featured_rank, featured_badge, featured_cta, seo_title, seo_description, seo_keywords";
 
 function publicClient() {
   const key = PUBLIC_SUPABASE_KEY;
