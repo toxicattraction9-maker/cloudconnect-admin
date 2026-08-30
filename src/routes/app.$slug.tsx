@@ -22,14 +22,16 @@ export const Route = createFileRoute("/app/$slug")({
       };
     }
     const app = loaderData.app;
-    const title = `${app.name} APK Download — YonoAppsCenter`;
+    const title = app.seo_title || `${app.name} APK Download — YonoAppsCenter`;
     const description =
+      app.seo_description ||
       app.description.slice(0, 155) ||
       `Download ${app.name}, rated ${app.rating.toFixed(1)} on YonoAppsCenter. Safe, fast and free.`;
     return {
       meta: [
         { title },
         { name: "description", content: description },
+        ...(app.seo_keywords ? [{ name: "keywords", content: app.seo_keywords }] : []),
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },

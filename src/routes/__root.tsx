@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -125,9 +126,22 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function usePageViewTracking() {
+  const pathname = useRouterState({ select: (st) => st.location.pathname });
+
+  useEffect(() => {
+    if (pathname.startsWith("/admin")) return;
+    void supabase
+      .from("page_views")
+      .insert({ path: pathname, referrer: document.referrer || null })
+      .then(() => undefined);
+  }, [pathname]);
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  usePageViewTracking();
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
